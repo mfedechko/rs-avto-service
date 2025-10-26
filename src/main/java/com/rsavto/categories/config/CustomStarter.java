@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CustomStarter implements ApplicationListener<ApplicationReadyEvent> {
     @Override
-    public void onApplicationEvent(ApplicationReadyEvent event) {
+    public void onApplicationEvent(final ApplicationReadyEvent event) {
         System.out.println("Application started!");
     }
 }
