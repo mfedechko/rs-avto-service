@@ -1,4 +1,6 @@
 spring:
+  main:
+    banner-mode: log
   h2:
     console:
       enabled: true
@@ -14,6 +16,15 @@ spring:
 
 server:
   port: 8081
+
+management:
+  endpoint:
+    env:
+      show-values: always
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,env"
 
 properties:
   foldersPath: "/Users/mfedechko/workspace/rsavto/categories/folders"

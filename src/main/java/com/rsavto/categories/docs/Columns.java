@@ -17,20 +17,20 @@ public class Columns {
     public static final Map<String, Integer> PRICE_COLUMNS = createPriceColumnsMap();
     public static final Map<String, Integer> INPUT_FULL = createInputFullColumnsMap();
 
-    private static final int A = 0;
-    private static final int B = 1;
-    private static final int C = 2;
-    private static final int D = 3;
-    private static final int E = 4;
-    private static final int F = 5;
-    private static final int G = 6;
-    private static final int H = 7;
-    private static final int I = 8;
-    private static final int J = 9;
-    private static final int K = 10;
-    private static final int L = 11;
-    private static final int M = 12;
-    private static final int N = 13;
+    public static final int A = 0;
+    public static final int B = 1;
+    public static final int C = 2;
+    public static final int D = 3;
+    public static final int E = 4;
+    public static final int F = 5;
+    public static final int G = 6;
+    public static final int H = 7;
+    public static final int I = 8;
+    public static final int J = 9;
+    public static final int K = 10;
+    public static final int L = 11;
+    public static final int M = 12;
+    public static final int N = 13;
 
     public static final String NUMBER = "number";
     public static final String ARTICLE = "article";
@@ -103,4 +103,16 @@ public class Columns {
                 entry(COMMENT3, N)
         );
     }
+
+    private static Map<String, Integer> createOutputColumnsMap() {
+        return Map.of(
+            BRAND, A,
+            ARTICLE, B,
+            DESCRIPTION, C,
+            PRICE, D,
+            QUANTITY, E,
+            PHOTO, F
+        );
+    }
+
 }

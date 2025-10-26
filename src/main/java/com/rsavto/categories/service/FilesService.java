@@ -1,7 +1,11 @@
 package com.rsavto.categories.service;
 
+import com.rsavto.categories.data.Category;
+import com.rsavto.categories.data.FileType;
+
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -30,5 +34,17 @@ public class FilesService {
             throw new FileNotFoundException();
         }
         return files.get(0).getAbsolutePath();
+    }
+
+    public String getOutputFilePath(final String fileName) {
+        return Paths.get(outputFolder, fileName).toString();
+    }
+
+    public String getFailedRecordsFilePath() {
+        return Paths.get(outputFolder, "errors.xlsx").toString();
+    }
+
+    public Path getCategoryFileName(final Category category) {
+        return Paths.get(outputFolder, category.getFileName() + "." + FileType.CSV.getExtension());
     }
 }
