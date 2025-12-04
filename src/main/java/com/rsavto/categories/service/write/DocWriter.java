@@ -1,6 +1,7 @@
 package com.rsavto.categories.service.write;
 
 import com.rsavto.categories.data.Category;
+import com.rsavto.categories.data.FileNames;
 import com.rsavto.categories.docs.model.GoogleRecord;
 import com.rsavto.categories.docs.model.InputRecord;
 import com.rsavto.categories.service.DataService;
@@ -9,6 +10,7 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,10 +18,12 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Mykola Fedechko
  */
+@Service
 public class DocWriter {
 
     private static final int BRAND = 0;
@@ -27,7 +31,8 @@ public class DocWriter {
     private static final int DESC = 2;
     private static final int PRICE = 3;
     private static final int QUANTITY = 4;
-    private String phoneNumber = "";
+
+    protected static final int AVTOPRO_QUANTITY = 4;
 
     private final FilesService filesService;
     private final DataService dataService;
@@ -37,9 +42,83 @@ public class DocWriter {
         this.dataService = dataService;
     }
 
+    public WriteResults createFilesForAllInputRecords(final List<InputRecord> records) throws IOException {
 
-    protected void writeToFile(final List<InputRecord> parts,
-                               final String filePath) throws IOException {
+        final var writeResults = new WriteResults();
+
+        final var notAvailableParts = records.stream()
+                .filter(r -> r.getQuantity() == 0)
+                .collect(Collectors.toList());
+        final var availableParts = records.stream()
+                .filter(r -> r.getQuantity() > 0)
+                .peek(r -> r.setQuantity(Math.min(AVTOPRO_QUANTITY, r.getQuantity())))
+                .collect(Collectors.toList());
+
+        final var availablePartsFilePath = filesService.getOutputFilePath(FileNames.AVTOPRO_ALL);
+        final var notAvailablePartsFilePath = filesService.getOutputFilePath(FileNames.ORDER);
+
+        createOutputFile(availableParts, availablePartsFilePath);
+        createOutputFile(notAvailableParts, notAvailablePartsFilePath);
+
+        writeResults.setAvailableParts(availableParts.size());
+        writeResults.setNotAvailableParts(notAvailableParts.size());
+        writeResults.setTotalParts(records.size());
+
+        writeResults.setAvailablePartsFilePath(availablePartsFilePath);
+        writeResults.setNotAvailablePartsFilePath(notAvailablePartsFilePath);
+
+        final var errors = records.stream().filter(InputRecord::hasErrors).toList();
+        final var errorsFilePath = filesService.getOutputFilePath(FileNames.ORDER);
+        createFailedRecordsFile(errors, errorsFilePath);
+
+        writeResults.setErrorsCount(errors.size());
+        writeResults.setErrorsFilePath(errorsFilePath);
+
+        final var categoriesWithRecords = records.stream()
+                .filter(r -> r.getQuantity() > 0)
+                .filter(r -> r.getDescArticle() != null)
+                .collect(Collectors.groupingBy(InputRecord::getCategory));
+
+        final var originalArticles = categoriesWithRecords.get(Category.ORIGINAL).stream()
+                .map(InputRecord::getDescArticle)
+                .collect(Collectors.toSet());
+
+        final var copies = new ArrayList<InputRecord>();
+        for (final var entry : categoriesWithRecords.entrySet()) {
+            final var category = entry.getKey();
+            final var categoryRecords = entry.getValue();
+            createCsvFileForCategory(category, categoryRecords, originalArticles, copies);
+        }
+        final var copiesFilePath = filesService.getOutputFilePath(FileNames.COPIES);
+        createOutputFile(copies, copiesFilePath);
+
+        writeResults.setCopiesCount(copies.size());
+        writeResults.setCopiesFilePath(copiesFilePath);
+        return writeResults;
+    }
+
+    public WriteResults createFilesForRsaRecords(final List<InputRecord> records) throws IOException {
+        final var writeResults = new WriteResults();
+        final var availableRsaParts = records.stream()
+                .filter(r -> r.getQuantity() > 0)
+                .peek(r -> r.setQuantity(Math.min(AVTOPRO_QUANTITY, r.getQuantity())))
+                .collect(Collectors.toList());
+
+        writeResults.setTotalParts(records.size());
+        writeResults.setAvailableParts(availableRsaParts.size());
+        writeResults.setNotAvailableParts(records.size() -  availableRsaParts.size());
+
+        final var rsaPathFilePath = filesService.getOutputFilePath(FileNames.AVTOPRO_RSA);
+        createOutputFile(availableRsaParts, rsaPathFilePath);
+        createCsvFileForCategory(Category.RSA, availableRsaParts, Set.of(), List.of());
+
+        writeResults.setAvailablePartsFilePath(rsaPathFilePath);
+        return writeResults;
+    }
+
+
+    protected void createOutputFile(final List<InputRecord> parts,
+                                    final String filePath) throws IOException {
         final Workbook workbook = new XSSFWorkbook();
         final var sheet = workbook.createSheet();
         createHeaderRow(sheet);
@@ -173,7 +252,8 @@ public class DocWriter {
         return String.format("%s , код запчастини: %s , виробник: %s , " +
                                      "стан: Новий , товар в наявності відправка в день замовлення транспортною компанією Нова пошта \", " +
                                      "Оплата : післяоплата на відділенні служби доставки чи платіж на рахунок . " +
-                                     "Наші телефони: %s ( є VIBER ) є можливість перевірки по він коду.", desc, article, brand, phoneNumber);
+                                     "Наші телефони: %s ( є VIBER ) є можливість перевірки по він коду.",
+                             desc, article, brand, dataService.getPhoneNumber());
     }
 
 
@@ -184,7 +264,7 @@ public class DocWriter {
                                      "Товар в наявності відправка в день замовлення транспортною компанією Нова пошта , " +
                                      "Оплата: післяоплата на відділенні служби доставки чи платіж на рахунок . " +
                                      "Наші телефони: %s ( є VIBER ) є можливість перевірки по він коду.",
-                             name, article, brand, phoneNumber);
+                             name, article, brand, dataService.getPhoneNumber());
     }
 
 
@@ -195,7 +275,7 @@ public class DocWriter {
                                      "стан: Новий, Товар в наявності відправка в день замовлення Новою поштою\", " +
                                      "Оплата: накладним платежем або переказ на карту т. %s (VIBER) можливість " +
                                      "перевірки по Vin коду\"",
-                             name, article, brand, phoneNumber);
+                             name, article, brand, dataService.getPhoneNumber());
     }
 
 

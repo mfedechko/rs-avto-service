@@ -4,6 +4,7 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,32 +15,27 @@ import java.util.List;
 /**
  * @author Mykola Fedechko
  */
+@Service
 public class FtpService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FtpService.class);
 
-    private final String host;
-    private final String user;
-    private final String password;
-    private final String sourceDir;
+    private final FilesService filesService;
 
-    public FtpService(final String host,
-                      final String user,
-                      final String password,
-                      final String sourceDir) {
-        this.host = host;
-        this.user = user;
-        this.password = password;
-        this.sourceDir = sourceDir;
+    public FtpService(final FilesService filesService) {
+        this.filesService = filesService;
     }
 
+    public int uploadPhotos() {
 
-    public void uploadPhotos() {
+        final var host = "rsavto.com.ua";
+        final var user = "img_allz994-wLgG";
+        final var password = "neGZihED1y0JyGAqezj34D";
+
         final var client = new FTPClient();
         FileInputStream fis = null;
 
         LOG.info("Connecting to {} host", host);
-
         try {
             client.connect(host);
             client.enterLocalPassiveMode();
@@ -49,27 +45,28 @@ public class FtpService {
             //
             // Create an InputStream of the file to be uploaded
             //
-            final var photosDir = new File(sourceDir);
+            final var photosDir = new File(filesService.getPhotosDir());
             final var files = new ArrayList<File>();
             collectFilesRecursively(photosDir, files);
 
             final var totalFilesCount = files.size();
             LOG.info("Start uploading {} to FTP", totalFilesCount);
-            var uploadedFiles = 0;
+            var uploadedFilesCount = 0;
             for (final var file : files) {
                 client.setFileType(FTP.BINARY_FILE_TYPE, FTP.BINARY_FILE_TYPE);
                 client.setFileTransferMode(FTP.BINARY_FILE_TYPE);
                 final var filename = file.getName();
                 fis = new FileInputStream(file);
                 client.storeFile(filename, fis);
-                uploadedFiles++;
-                if (uploadedFiles % 10 == 0) {
-                    LOG.info("{} out of {} have been uploaded", uploadedFiles, totalFilesCount);
+                uploadedFilesCount++;
+                if (uploadedFilesCount % 10 == 0) {
+                    LOG.info("{} out of {} have been uploaded", uploadedFilesCount, totalFilesCount);
                 }
             }
 
             LOG.info("All files have been successfully uploaded");
             client.logout();
+            return uploadedFilesCount;
         } catch (final IOException exc) {
             exc.printStackTrace();
         } finally {
@@ -82,8 +79,9 @@ public class FtpService {
                 exc.printStackTrace();
             }
         }
-    }
 
+        return -1;
+    }
 
     private static void collectFilesRecursively(final File dir, final List<File> fileList) {
         final var files = dir.listFiles();

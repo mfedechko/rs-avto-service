@@ -26,7 +26,10 @@ management:
       exposure:
         include: "health,info,env"
 
-properties:
-  foldersPath: "/Users/mfedechko/workspace/rsavto/categories/folders"
+files:
+  inputFolder: ""
+  outputFolder: ""
+  photosDir: ""
+
+data:
   phoneNumber: 111
-  photosDir: "/Users/mfedechko/workspace/photos"

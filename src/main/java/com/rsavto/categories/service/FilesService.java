@@ -2,6 +2,8 @@ package com.rsavto.categories.service;
 
 import com.rsavto.categories.data.Category;
 import com.rsavto.categories.data.FileType;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,15 +16,15 @@ import java.util.Objects;
 /**
  * @author mfedechko
  */
+@Service
 public class FilesService {
 
-    private final String inputFolder;
-    private final String outputFolder;
+    @Value("files.inputFolder")
+    private String inputFolder;
 
-    public FilesService(final String inputFolder, final String outputFolder) {
-        this.inputFolder = inputFolder;
-        this.outputFolder = outputFolder;
-    }
+    @Value("files.outputFolder")
+    private String outputFolder;
+
 
     public String getLatestFileInDirectory(final String folder) throws FileNotFoundException {
         final var workingFolder = Paths.get(inputFolder, folder).toFile();
@@ -36,6 +38,13 @@ public class FilesService {
         return files.get(0).getAbsolutePath();
     }
 
+    public void cleanCategoriesFolder() {
+        final var categoriesFolder = new File(outputFolder + "/categoryFiles");
+        for (final var file : Objects.requireNonNull(categoriesFolder.listFiles())) {
+            file.delete();
+        }
+    }
+
     public String getOutputFilePath(final String fileName) {
         return Paths.get(outputFolder, fileName).toString();
     }
@@ -46,5 +55,9 @@ public class FilesService {
 
     public Path getCategoryFileName(final Category category) {
         return Paths.get(outputFolder, category.getFileName() + "." + FileType.CSV.getExtension());
+    }
+
+    public String getPhotosDir() {
+        return Paths.get(inputFolder, "photos").toString();
     }
 }
