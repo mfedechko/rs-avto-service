@@ -12,10 +12,12 @@ import static java.util.Map.entry;
 @UtilityClass
 public class Columns {
 
-    public static final Map<String, Integer> INPUT_COLUMNS = createInputColumnsMap();
-    public static final Map<String, Integer> RSA_COLUMNS = createRsaColumnsMap();
+    public static final Map<String, Integer> INPUT_ALL = createInputColumnsMap();
+    public static final Map<String, Integer> INPUT_RSA = createRsaColumnsMap();
     public static final Map<String, Integer> PRICE_COLUMNS = createPriceColumnsMap();
     public static final Map<String, Integer> INPUT_FULL = createInputFullColumnsMap();
+
+    public static final Map<String, Integer> OUTPUT = createOutputColumnsMap();
 
     public static final int A = 0;
     public static final int B = 1;

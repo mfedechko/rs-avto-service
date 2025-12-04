@@ -25,10 +25,12 @@ public abstract class CategoriesReader {
 
     protected final FilesService filesService;
     protected final Map<String, Integer> columnsMap;
+    protected final Map<String, Integer> outputColumns;
 
     protected CategoriesReader(final FilesService filesService, final Map<String, Integer> columnsMap) {
         this.filesService = filesService;
         this.columnsMap = columnsMap;
+        this.outputColumns = Columns.OUTPUT;
     }
 
     public abstract List<InputRecord> readAllRecords() throws IOException;

@@ -1,8 +1,10 @@
 package com.rsavto.categories.service.read;
 
 import com.rsavto.categories.data.Category;
+import com.rsavto.categories.data.FileNames;
 import com.rsavto.categories.data.ReadErrors;
 import com.rsavto.categories.docs.Columns;
+import com.rsavto.categories.docs.model.OutputRecord;
 import com.rsavto.categories.docs.model.InputRecord;
 import com.rsavto.categories.service.FilesService;
 import com.rsavto.categories.util.ExcelUtils;
@@ -25,13 +27,13 @@ public class AllReader extends CategoriesReader{
     protected static final String DESC_SEPARATOR = "/";
 
     public AllReader(final FilesService filesService) {
-        super(filesService, Columns.INPUT_COLUMNS);
+        super(filesService, Columns.INPUT_ALL);
     }
 
     public List<InputRecord> readAllRecords() throws IOException {
         LOG.info("Start reading RSA input doc");
         final var filePath = filesService.getLatestFileInDirectory("rsa");
-        final var columnsMap = Columns.RSA_COLUMNS;
+        final var columnsMap = Columns.INPUT_RSA;
         final var sheet = getFirstXlsxSheet(filePath);
         final var rowIterator = sheet.rowIterator();
         rowIterator.next();
@@ -104,6 +106,33 @@ public class AllReader extends CategoriesReader{
 
         LOG.info("ALL input doc has been processed. Number of new records: {}", records.size());
         return records;
+    }
+
+    public List<OutputRecord> readOutputRecords() throws IOException {
+        LOG.info("Start reading Avtopro input doc");
+        final var records = new ArrayList<OutputRecord>();
+        final var filePath = filesService.getOutputFilePath(FileNames.AVTOPRO_ALL);
+        final var sheet = getFirstXlsxSheet(filePath);
+        final var rowIterator = sheet.rowIterator();
+        rowIterator.next();
+        while (rowIterator.hasNext()) {
+            final var row = rowIterator.next();
+            final var record = new OutputRecord();
+            final var brand = row.getCell(outputColumns.get(Columns.BRAND)).getStringCellValue();
+            final var article = row.getCell(outputColumns.get(Columns.ARTICLE)).getStringCellValue();
+            final var desc = row.getCell(outputColumns.get(Columns.DESCRIPTION)).getStringCellValue();
+            final var price = row.getCell(outputColumns.get(Columns.PRICE)).getNumericCellValue();
+            final var quantity = (int) row.getCell(outputColumns.get(Columns.QUANTITY)).getNumericCellValue();
+
+            record.setBrand(brand);
+            record.setArticle(article);
+            record.setDesc(desc);
+            record.setPrice(price);
+            record.setQuantity(quantity);
+            records.add(record);
+        }
+
+        return  records;
     }
 
     protected static Category processCategory(final String groupValue) {

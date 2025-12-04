@@ -23,7 +23,7 @@ public class RsaReader extends CategoriesReader {
     private static final Logger LOG = LoggerFactory.getLogger(RsaReader.class);
 
     public RsaReader(final FilesService filesService) {
-        super(filesService, Columns.RSA_COLUMNS);
+        super(filesService, Columns.INPUT_RSA);
     }
 
     @Override
