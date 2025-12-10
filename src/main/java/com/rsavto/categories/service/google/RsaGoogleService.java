@@ -1,13 +1,12 @@
 package com.rsavto.categories.service.google;
 
-import com.rsavto.categories.data.Category;
 import com.rsavto.categories.data.FileNames;
 import com.rsavto.categories.docs.CreateGoogleResponse;
 import com.rsavto.categories.docs.model.GoogleRecord;
 import com.rsavto.categories.docs.model.InputRecord;
-import com.rsavto.categories.service.read.AllReader;
 import com.rsavto.categories.service.read.RsaReader;
 import com.rsavto.categories.service.write.GoogleWriter;
+import com.rsavto.categories.site.AdminService;
 import com.rsavto.categories.site.RsAvtoWebSiteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 /**
  * @author mfedechko
@@ -29,8 +27,9 @@ public class RsaGoogleService extends GoogleService {
 
     public RsaGoogleService(final RsaReader rsaReader,
                             final RsAvtoWebSiteService rsAvtoWebSiteService,
-                            final GoogleWriter googleWriter) {
-        super(rsaReader, rsAvtoWebSiteService, googleWriter);
+                            final GoogleWriter googleWriter,
+                            final AdminService adminService) {
+        super(rsaReader, rsAvtoWebSiteService, googleWriter, adminService);
     }
 
     @Override
@@ -38,6 +37,7 @@ public class RsaGoogleService extends GoogleService {
         LOG.info("Start creating google doc");
         final var eurRate = BigDecimal.valueOf(adminService.getRate());
         final var rsaRecords = recordsReader.readAllRecords().stream()
+                .filter(r -> !r.hasErrors())
                 .filter(r -> r.getQuantity() > 0 && r.getArticle() != null)
                 .toList();
         final var rsaArticles = rsaRecords.stream()
@@ -65,6 +65,7 @@ public class RsaGoogleService extends GoogleService {
         googleWriter.createGoogleExcel(googleRecords, FileNames.GOOGLE_RSA);
 
         LOG.info("Google doc has been successfully created.");
+        return new CreateGoogleResponse();
     }
 
     @Override

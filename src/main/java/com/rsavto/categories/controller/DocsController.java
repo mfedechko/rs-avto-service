@@ -20,7 +20,8 @@ public class DocsController {
     private final AllProcessor allProcessor;
     private final RsaProcessor rsaProcessor;
 
-    public DocsController(final AllProcessor allProcessor, final RsaProcessor rsaProcessor) {
+    public DocsController(final AllProcessor allProcessor,
+                          final RsaProcessor rsaProcessor) {
         this.allProcessor = allProcessor;
         this.rsaProcessor = rsaProcessor;
     }

@@ -7,6 +7,7 @@ import com.rsavto.categories.docs.model.GoogleRecord;
 import com.rsavto.categories.docs.model.InputRecord;
 import com.rsavto.categories.service.read.AllReader;
 import com.rsavto.categories.service.write.GoogleWriter;
+import com.rsavto.categories.site.AdminService;
 import com.rsavto.categories.site.RsAvtoWebSiteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,8 +29,9 @@ public class AllGoogleService extends GoogleService{
 
     public AllGoogleService(final AllReader allReader,
                             final RsAvtoWebSiteService rsAvtoWebSiteService,
-                            final GoogleWriter googleWriter) {
-        super(allReader, rsAvtoWebSiteService, googleWriter);
+                            final GoogleWriter googleWriter,
+                            final AdminService adminService) {
+        super(allReader, rsAvtoWebSiteService, googleWriter, adminService);
     }
 
     @Override
@@ -38,11 +40,14 @@ public class AllGoogleService extends GoogleService{
         LOG.info("Start creating google doc");
         final var eurRate = BigDecimal.valueOf(adminService.getRate());
         final var records = recordsReader.readAllRecords().stream()
+                .filter(r -> !r.hasErrors())
                 .filter(r -> r.getQuantity() > 0)
                 .filter(r -> r.getDescArticle() != null)
+                .limit(100)
                 .toList();
 
         final var originalArticles = records.stream()
+                .filter(r -> !r.hasErrors())
                 .filter(r -> r.getCategory() == Category.ORIGINAL)
                 .map(InputRecord::getArticle)
                 .collect(Collectors.toSet());
@@ -73,6 +78,9 @@ public class AllGoogleService extends GoogleService{
             googleRecord.setPicture(partPage.getImageLink());
             googleRecord.setBrand(brand);
             googleRecords.add(googleRecord);
+            if (googleRecords.size() == 100) {
+                break;
+            }
         }
 
         googleWriter.createGoogleExcel(googleRecords, FileNames.GOOGLE_ALL);

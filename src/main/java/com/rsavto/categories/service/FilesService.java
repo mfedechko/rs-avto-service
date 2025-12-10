@@ -19,15 +19,21 @@ import java.util.Objects;
 @Service
 public class FilesService {
 
-    @Value("files.inputFolder")
-    private String inputFolder;
+    private static final String INPUT_DIR = "input";
+    private static final String OUTPUT_DIR = "output";
+    private static final String WEBDRIVER = "webdriver";
+    private static final String PHOTOS = "photos";
+    private static final String CATEGORIES_DIR = "categoryFiles";
+    private static final String CHROMEDRIVER = "chromedriver";
 
-    @Value("files.outputFolder")
-    private String outputFolder;
+    @Value("${workDir}")
+    private String workDir;
 
+    @Value("${inPhotosFolder}")
+    private String inPhotosFolder;
 
     public String getLatestFileInDirectory(final String folder) throws FileNotFoundException {
-        final var workingFolder = Paths.get(inputFolder, folder).toFile();
+        final var workingFolder = Paths.get(workDir, INPUT_DIR, folder).toFile();
         final var files = Arrays.stream(Objects.requireNonNull(workingFolder.listFiles()))
                 .filter(f -> !f.getName().equals(".DS_Store"))
                 .sorted(Comparator.comparingLong(File::lastModified).reversed())
@@ -39,25 +45,35 @@ public class FilesService {
     }
 
     public void cleanCategoriesFolder() {
-        final var categoriesFolder = new File(outputFolder + "/categoryFiles");
+        final var categoriesFolder = Paths.get(workDir, OUTPUT_DIR, CATEGORIES_DIR).toFile();
         for (final var file : Objects.requireNonNull(categoriesFolder.listFiles())) {
             file.delete();
         }
     }
 
     public String getOutputFilePath(final String fileName) {
-        return Paths.get(outputFolder, fileName).toString();
+        return Paths.get(workDir, OUTPUT_DIR, fileName).toString();
     }
 
     public String getFailedRecordsFilePath() {
-        return Paths.get(outputFolder, "errors.xlsx").toString();
+        return Paths.get(workDir, OUTPUT_DIR, "errors.xlsx").toString();
     }
 
     public Path getCategoryFileName(final Category category) {
-        return Paths.get(outputFolder, category.getFileName() + "." + FileType.CSV.getExtension());
+        return Paths.get(workDir, OUTPUT_DIR, CATEGORIES_DIR, category.getFileName() + "." + FileType.CSV.getExtension());
     }
 
     public String getPhotosDir() {
-        return Paths.get(inputFolder, "photos").toString();
+        return Paths.get(workDir, INPUT_DIR, PHOTOS).toString();
     }
+
+    public String getWebDriverPath() {
+        return Paths.get(workDir, WEBDRIVER, CHROMEDRIVER).toString();
+    }
+
+    public String getInputPhotosDir() {
+        return inPhotosFolder;
+    }
+
+
 }

@@ -2,7 +2,6 @@ package com.rsavto.categories.service.write;
 
 import com.rsavto.categories.data.Category;
 import com.rsavto.categories.data.FileNames;
-import com.rsavto.categories.docs.model.GoogleRecord;
 import com.rsavto.categories.docs.model.InputRecord;
 import com.rsavto.categories.service.DataService;
 import com.rsavto.categories.service.FilesService;
@@ -47,9 +46,11 @@ public class DocWriter {
         final var writeResults = new WriteResults();
 
         final var notAvailableParts = records.stream()
+                .filter(r -> !r.hasErrors())
                 .filter(r -> r.getQuantity() == 0)
                 .collect(Collectors.toList());
         final var availableParts = records.stream()
+                .filter(r -> !r.hasErrors())
                 .filter(r -> r.getQuantity() > 0)
                 .peek(r -> r.setQuantity(Math.min(AVTOPRO_QUANTITY, r.getQuantity())))
                 .collect(Collectors.toList());

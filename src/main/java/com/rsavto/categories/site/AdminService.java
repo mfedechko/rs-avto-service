@@ -1,24 +1,27 @@
 package com.rsavto.categories.site;
 
-import com.rsavto.categories.core.data.Category;
-import com.rsavto.categories.exception.MagazunException;
+import com.rsavto.categories.data.Category;
+import com.rsavto.categories.data.CategoryType;
+import com.rsavto.categories.service.FilesService;
 import com.rsavto.categories.site.admin.AdminHomePage;
 import com.rsavto.categories.site.admin.LoginPage;
-import com.rsavto.categories.util.FileUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.PageFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
-import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
  * @author Mykola Fedechko
  */
+@Service
 public class AdminService {
 
     private static final Logger LOG = LoggerFactory.getLogger(AdminService.class);
@@ -28,14 +31,25 @@ public class AdminService {
 
     private final static String FORTUNA_LOGIN_URL = "https://fortunaavto.com.ua/adm";
     private final static String FORTUNA_IMPORT_URL = "https://fortunaavto.com.ua/adm/?m=shop&type=data";
-    private final String categoriesFolder;
+    private final FilesService filesService;
 
-    public AdminService(final String categoriesFolder, final String webdriverFolderFolder) {
-        this.categoriesFolder = categoriesFolder;
-        System.setProperty("webdriver.chrome.driver", FileUtils.buildChromeDriverPath(webdriverFolderFolder));
+    public AdminService(final FilesService filesService) {
+        this.filesService = filesService;
+        final var webDriverPath = filesService.getWebDriverPath();
+        System.setProperty("webdriver.chrome.driver", webDriverPath);
     }
 
-    public void uploadCategories(final List<Category> categories) {
+    public void uploadCategories(final CategoryType categoryType) {
+
+        final List<Category> categories;
+        if (categoryType == CategoryType.RSA) {
+            categories = Collections.singletonList(Category.RSA);
+        } else {
+            categories = Arrays.stream(Category.values())
+                    .filter(c -> c != Category.RSA)
+                    .toList();
+        }
+
         final var driver = getHeadlessChrome();
         final var homePage = login(driver);
         final var catalogPage = homePage.openCatalog();
@@ -43,7 +57,9 @@ public class AdminService {
         final var importCategoriesPage = cataloguesPage.openImport();
         for (final var category : categories) {
 
-            final var categoryFile = new File(FileUtils.buildCategoryFilePath(categoriesFolder, category).toString());
+            final var categoryFilePath = filesService.getCategoryFileName(category);
+
+            final var categoryFile = categoryFilePath.toFile();
             if (!categoryFile.exists()) {
                 LOG.warn("No file for " + category);
                 continue;
@@ -93,7 +109,7 @@ public class AdminService {
         try {
             Thread.sleep(mills);
         } catch (final InterruptedException exc) {
-            throw new MagazunException("While waiting", exc);
+            throw new RuntimeException("While waiting", exc);
         }
     }
 

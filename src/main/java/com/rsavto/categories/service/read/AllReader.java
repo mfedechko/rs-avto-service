@@ -4,8 +4,8 @@ import com.rsavto.categories.data.Category;
 import com.rsavto.categories.data.FileNames;
 import com.rsavto.categories.data.ReadErrors;
 import com.rsavto.categories.docs.Columns;
-import com.rsavto.categories.docs.model.OutputRecord;
 import com.rsavto.categories.docs.model.InputRecord;
+import com.rsavto.categories.docs.model.OutputRecord;
 import com.rsavto.categories.service.FilesService;
 import com.rsavto.categories.util.ExcelUtils;
 import org.slf4j.Logger;
@@ -32,7 +32,7 @@ public class AllReader extends CategoriesReader{
 
     public List<InputRecord> readAllRecords() throws IOException {
         LOG.info("Start reading RSA input doc");
-        final var filePath = filesService.getLatestFileInDirectory("rsa");
+        final var filePath = filesService.getLatestFileInDirectory("categories");
         final var columnsMap = Columns.INPUT_RSA;
         final var sheet = getFirstXlsxSheet(filePath);
         final var rowIterator = sheet.rowIterator();
@@ -42,7 +42,7 @@ public class AllReader extends CategoriesReader{
             final var row = rowIterator.next();
 
             final var record = buildInitialRecord(row);
-            record.setInputRow(row.getRowNum());
+            record.setInputRow(row.getRowNum() + 1);
             if (record.hasErrors()) {
                 records.add(record);
                 continue;
@@ -77,7 +77,6 @@ public class AllReader extends CategoriesReader{
                 }
                 descName = descNameBuilder.substring(0, descNameBuilder.length() - 1);
             }
-
 
             if (category == Category.ORIGINAL) {
                 descArticle = record.getArticle();
@@ -143,6 +142,4 @@ public class AllReader extends CategoriesReader{
         processedValue = processedValue.replaceAll("e", "е");
         return Category.fromAbbr(processedValue);
     }
-
-
 }
