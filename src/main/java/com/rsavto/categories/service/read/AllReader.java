@@ -33,7 +33,6 @@ public class AllReader extends CategoriesReader{
     public List<InputRecord> readAllRecords() throws IOException {
         LOG.info("Start reading RSA input doc");
         final var filePath = filesService.getLatestFileInDirectory("categories");
-        final var columnsMap = Columns.INPUT_RSA;
         final var sheet = getFirstXlsxSheet(filePath);
         final var rowIterator = sheet.rowIterator();
         rowIterator.next();

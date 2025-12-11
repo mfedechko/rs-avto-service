@@ -16,6 +16,10 @@ public class DataService {
     @Value("${data.phoneNumber}")
     private String phoneNumber;
 
-    private double rate;
+    @Value("${google.chunkSize}")
+    private Integer chunkSize;
+
+    @Value("${google.sleepTime}")
+    private Integer sleepTime;
 
 }

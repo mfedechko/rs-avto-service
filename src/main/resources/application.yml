@@ -4,5 +4,9 @@ server:
 workDir: "/Users/mfedechko/workspace/rsavto/folders"
 inPhotosFolder: "/Users/mfedechko/workspace/rsavto/images"
 
+google:
+  chunkSize: 10
+  sleepTime: 10
+
 data:
   phoneNumber: 111

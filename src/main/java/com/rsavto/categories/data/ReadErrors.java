@@ -8,9 +8,9 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class ReadErrors {
 
-    public static final String NO_BRAND = "Brand is not available";
-    public static final String NO_ARTICLE = "Article is not available";
-    public static final String NO_DESC = "Description is not available";
-    public static final String WRONG_DESC = "Wrong description";
-    public static final String NO_CATEGORY = "Category is not available";
+    public static final String NO_BRAND = "Немає бренду";
+    public static final String NO_ARTICLE = "Немає артикулу";
+    public static final String NO_DESC = "Немає опису";
+    public static final String WRONG_DESC = "Поганий опис";
+    public static final String NO_CATEGORY = "Немає категорії";
 }

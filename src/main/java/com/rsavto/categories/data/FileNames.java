@@ -14,7 +14,9 @@ public class FileNames {
     public static final String AVTOPRO_ALL = "автопро_all.xlsx";
     public static final String AVTOPRO_RSA = "автопро_rsa.xlsx";
     public static final String GOOGLE_ALL = "google_all.xlsx";
+    public static final String GOOGLE_ALL_CHUNK = "google_all_%s.xlsx";
     public static final String GOOGLE_RSA = "google_rsa.xlsx";
+    public static final String GOOGLE_RSA_CHUNK = "google_rsa_%s.xlsx";
     public static final String COPIES = "copies.xlsx";
     public static final String ERRORS = "errors.xlsx";
     public static final String UPDATED_INPUT_DOC = "with_updated_prices.xlsx";

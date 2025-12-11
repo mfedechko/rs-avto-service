@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -25,6 +27,7 @@ public class FilesService {
     private static final String PHOTOS = "photos";
     private static final String CATEGORIES_DIR = "categoryFiles";
     private static final String CHROMEDRIVER = "chromedriver";
+    private static final String GOOGLE_TMP = "google_tmp";
 
     @Value("${workDir}")
     private String workDir;
@@ -76,4 +79,37 @@ public class FilesService {
     }
 
 
+    public String getGoogleTmpFolder() {
+        return Paths.get(workDir, OUTPUT_DIR, GOOGLE_TMP).toString();
+    }
+
+    public void createGoogleTmpFolder() throws IOException {
+        final var path = Paths.get(workDir, OUTPUT_DIR, GOOGLE_TMP);
+
+
+        if (Files.exists(path)) {
+            final var files = Files.list(path).toList();
+            for (final var file : files) {
+                Files.delete(file);
+            }
+            Files.delete(path);
+        }
+        Files.createDirectory(path);
+    }
+
+    public void cleanGoogleTmpFolder() throws IOException {
+        final var path = Paths.get(workDir, OUTPUT_DIR, GOOGLE_TMP);
+        Files.list(path).forEach(p -> {
+            try {
+                Files.delete(p);
+            } catch (final IOException exc) {
+                throw new RuntimeException(exc);
+            }
+        });
+
+    }
+
+    public String createGoogleTmpFilePath(final String fileName) {
+        return Paths.get(workDir, OUTPUT_DIR, GOOGLE_TMP, fileName).toString();
+    }
 }

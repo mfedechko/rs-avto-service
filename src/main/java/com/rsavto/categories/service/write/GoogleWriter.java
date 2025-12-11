@@ -1,6 +1,5 @@
 package com.rsavto.categories.service.write;
 
-import com.rsavto.categories.data.FileNames;
 import com.rsavto.categories.docs.model.GoogleRecord;
 import com.rsavto.categories.service.FilesService;
 import org.apache.poi.ss.usermodel.CellType;
@@ -50,6 +49,47 @@ public class GoogleWriter {
             imageCell.setCellValue(record.getPicture());
             final var brandCell = row.createCell(10, CellType.STRING);
             brandCell.setCellValue(record.getBrand());
+        }
+
+        final var filePath = filesService.createGoogleTmpFilePath(fileName);
+        final var outputStream = new FileOutputStream(filePath);
+        workbook.write(outputStream);
+        outputStream.close();
+        workbook.close();
+    }
+
+    public void copyGoogleExcel(final List<GoogleInputRecord> records,
+                                final String fileName) throws IOException {
+
+        final Workbook workbook = new XSSFWorkbook();
+        final var sheet = workbook.createSheet();
+        createHeaderGoogleRow(sheet);
+        for (var i = 0; i < records.size(); i++) {
+            final var row = sheet.createRow(i + 1);
+            final var record = records.get(i);
+            final var articleCell = row.createCell(0, CellType.STRING);
+            articleCell.setCellValue(record.getId());
+            final var nameCell = row.createCell(1, CellType.STRING);
+            nameCell.setCellValue(record.getName());
+            final var descriptionCell = row.createCell(2, CellType.STRING);
+            descriptionCell.setCellValue(record.getDesc());
+            final var linkCell = row.createCell(3, CellType.STRING);
+            linkCell.setCellValue(record.getLink());
+            row.createCell(4, CellType.STRING);
+            final var priceCell = row.createCell(5, CellType.NUMERIC);
+            priceCell.setCellValue(record.getPrice());
+            final var availabilityPage = row.createCell(6, CellType.STRING);
+            availabilityPage.setCellValue("у наявності ");
+            final var imageCell = row.createCell(7, CellType.STRING);
+            imageCell.setCellValue(record.getPictureLink());
+            final var brandCell = row.createCell(10, CellType.STRING);
+            brandCell.setCellValue(record.getBrand());
+
+            //Filling null cells
+            row.createCell(8, CellType.STRING).setCellValue("");
+            row.createCell(9, CellType.STRING).setCellValue("");
+            row.createCell(11, CellType.STRING).setCellValue("");
+
         }
 
         final var filePath = filesService.getOutputFilePath(fileName);
