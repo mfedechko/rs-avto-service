@@ -1,7 +1,7 @@
 package com.rsavto.categories.service.read;
 
 import com.rsavto.categories.service.FilesService;
-import com.rsavto.categories.service.write.GoogleInputRecord;
+import com.rsavto.categories.docs.model.GoogleInputRecord;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
@@ -41,10 +41,10 @@ public class Googlereader {
             final var price = row.getCell(5).getStringCellValue();
             final var availability = row.getCell(6).getStringCellValue();
             final var pictureLink = row.getCell(7).getStringCellValue();
-//            final var gtin = row.getCell(8).getStringCellValue();
-//            final var manCode = row.getCell(9).getStringCellValue();
+            final var gtin = row.getCell(8).getStringCellValue();
+            final var manCode = row.getCell(9).getStringCellValue();
             final var brand = row.getCell(10).getStringCellValue();
-//            final var category = row.getCell(11).getStringCellValue();
+            final var category = row.getCell(11).getStringCellValue();
 
             final var googleRecord = new GoogleInputRecord();
             googleRecord.setId(id);
@@ -55,10 +55,10 @@ public class Googlereader {
             googleRecord.setPrice(price);
             googleRecord.setAvailability(availability);
             googleRecord.setPictureLink(pictureLink);
-//            googleRecord.setGtin(gtin);
-//            googleRecord.setManCode(manCode);
+            googleRecord.setGtin(gtin);
+            googleRecord.setManCode(manCode);
             googleRecord.setBrand(brand);
-//            googleRecord.setCategory(category);
+            googleRecord.setCategory(category);
             googleRecords.add(googleRecord);
         }
 

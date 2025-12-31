@@ -1,0 +1,12 @@
+server:
+  port: 8082
+
+workDir: "D:\app\folders"
+inPhotosFolder: "C:\Users\Anton\Desktop\foto"
+
+google:
+  chunkSize: 200
+  sleepTime: 15
+
+data:
+  phoneNumber: 0638080251

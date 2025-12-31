@@ -6,11 +6,13 @@ import com.rsavto.categories.service.DataService;
 import com.rsavto.categories.service.FilesService;
 import com.rsavto.categories.service.read.CategoriesReader;
 import com.rsavto.categories.service.read.Googlereader;
-import com.rsavto.categories.service.write.GoogleInputRecord;
+import com.rsavto.categories.docs.model.GoogleInputRecord;
 import com.rsavto.categories.service.write.GoogleWriter;
 import com.rsavto.categories.site.AdminService;
 import com.rsavto.categories.site.RsAvtoWebSiteService;
 import com.rsavto.categories.util.RsAvtoUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +25,8 @@ import java.util.Objects;
  * @author mfedechko
  */
 public abstract class GoogleService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GoogleService.class);
 
     protected final CategoriesReader recordsReader;
     protected final RsAvtoWebSiteService rsAvtoWebSiteService;
@@ -64,8 +68,6 @@ public abstract class GoogleService {
                 .filter(r -> !r.hasErrors()
                         && r.getQuantity() != 0
                         && r.getDescArticle() != null)
-                //TODO remove limit
-                .limit(100)
                 .toList();
     }
 
@@ -91,6 +93,7 @@ public abstract class GoogleService {
             final var recordsChunk = chunks.get(i);
             createDocForChunk(recordsChunk, i + 1);
             currentProcessedChunk++;
+            LOG.info("Chunk {} out of {} has been processed", currentProcessedChunk, chunks.size());
             RsAvtoUtils.countDown(sleepTime);
 
         }

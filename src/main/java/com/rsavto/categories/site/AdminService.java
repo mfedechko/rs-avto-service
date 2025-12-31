@@ -1,7 +1,6 @@
 package com.rsavto.categories.site;
 
 import com.rsavto.categories.data.Category;
-import com.rsavto.categories.data.CategoryType;
 import com.rsavto.categories.service.FilesService;
 import com.rsavto.categories.site.admin.AdminHomePage;
 import com.rsavto.categories.site.admin.LoginPage;
@@ -13,8 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -39,17 +36,7 @@ public class AdminService {
         System.setProperty("webdriver.chrome.driver", webDriverPath);
     }
 
-    public void uploadCategories(final CategoryType categoryType) {
-
-        final List<Category> categories;
-        if (categoryType == CategoryType.RSA) {
-            categories = Collections.singletonList(Category.RSA);
-        } else {
-            categories = Arrays.stream(Category.values())
-                    .filter(c -> c != Category.RSA)
-                    .toList();
-        }
-
+    public void uploadCategories(final List<Category> categories) {
         final var driver = getHeadlessChrome();
         final var homePage = login(driver);
         final var catalogPage = homePage.openCatalog();
@@ -57,9 +44,7 @@ public class AdminService {
         final var importCategoriesPage = cataloguesPage.openImport();
         for (final var category : categories) {
 
-            final var categoryFilePath = filesService.getCategoryFileName(category);
-
-            final var categoryFile = categoryFilePath.toFile();
+            final var categoryFile = filesService.getCategoryFileName(category).toFile();
             if (!categoryFile.exists()) {
                 LOG.warn("No file for " + category);
                 continue;
@@ -112,5 +97,4 @@ public class AdminService {
             throw new RuntimeException("While waiting", exc);
         }
     }
-
 }

@@ -26,6 +26,7 @@ public class FtpService {
         this.filesService = filesService;
     }
 
+    //TODO upload only available photos
     public int uploadPhotos() {
 
         final var host = "rsavto.com.ua";

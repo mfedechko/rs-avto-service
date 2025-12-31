@@ -7,6 +7,7 @@ import com.rsavto.categories.service.FilesService;
 import com.rsavto.categories.util.ExcelUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.List;
 /**
  * @author mykola.fedechko
  */
+@Service
 public class PriceReader extends CategoriesReader{
 
     private static final Logger LOG = LoggerFactory.getLogger(PriceReader.class);
@@ -30,7 +32,7 @@ public class PriceReader extends CategoriesReader{
 
         final var sheet = getFirstXlsxSheet(filePath);
         final var rowIterator = sheet.rowIterator();
-        rowIterator.next();
+//        rowIterator.next();
         final var priceRecords = new ArrayList<InputRecord>();
         while (rowIterator.hasNext()) {
             final var row = rowIterator.next();

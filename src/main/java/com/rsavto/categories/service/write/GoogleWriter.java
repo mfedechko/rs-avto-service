@@ -1,5 +1,6 @@
 package com.rsavto.categories.service.write;
 
+import com.rsavto.categories.docs.model.GoogleInputRecord;
 import com.rsavto.categories.docs.model.GoogleRecord;
 import com.rsavto.categories.service.FilesService;
 import org.apache.poi.ss.usermodel.CellType;
@@ -49,6 +50,11 @@ public class GoogleWriter {
             imageCell.setCellValue(record.getPicture());
             final var brandCell = row.createCell(10, CellType.STRING);
             brandCell.setCellValue(record.getBrand());
+
+            //Filling null cells
+            row.createCell(8, CellType.STRING).setCellValue("");
+            row.createCell(9, CellType.STRING).setCellValue("");
+            row.createCell(11, CellType.STRING).setCellValue("");
         }
 
         final var filePath = filesService.createGoogleTmpFilePath(fileName);

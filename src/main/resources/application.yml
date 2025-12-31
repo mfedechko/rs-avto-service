@@ -2,11 +2,11 @@ server:
   port: 8081
 
 workDir: "/Users/mfedechko/workspace/rsavto/folders"
-inPhotosFolder: "/Users/mfedechko/workspace/rsavto/images"
+inPhotosFolder: "/Users/mfedechko/workspace/rsavto/foto"
 
 google:
-  chunkSize: 10
-  sleepTime: 10
+  chunkSize: 200
+  sleepTime: 15
 
 data:
-  phoneNumber: 111
+  phoneNumber: 0638080251

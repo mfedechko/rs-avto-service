@@ -1,4 +1,4 @@
-package com.rsavto.categories.service.write;
+package com.rsavto.categories.docs.model;
 
 import lombok.Getter;
 import lombok.Setter;

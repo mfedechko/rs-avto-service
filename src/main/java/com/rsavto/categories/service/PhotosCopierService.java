@@ -29,7 +29,7 @@ public class PhotosCopierService {
                 assert files != null;
                 System.out.printf("Copying %s files for %s\n", files.length, file.getName());
                 for (final var photoFile : files) {
-                    Files.copy(Paths.get(photoFile.getAbsolutePath()), Paths.get(filesService.getOutputFilePath(""), photoFile.getName()), StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(Paths.get(photoFile.getAbsolutePath()), Paths.get(filesService.getPhotosDir(), photoFile.getName()), StandardCopyOption.REPLACE_EXISTING);
                 }
                 System.out.printf("All files for %s have been copied\n", file.getName());
             }

@@ -85,9 +85,6 @@ public class RsAvtoWebSiteService {
             final var partPage = new PartPage(pageLink, imageLink);
             articleLinks.put(article, partPage);
             LOG.info("URL is: " + pageLink);
-            if (i % 50 == 0) {
-                LOG.info(i + " out of " + articles.size() + " articles have been processed");
-            }
         }
 
         return articleLinks;

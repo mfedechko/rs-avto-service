@@ -20,6 +20,6 @@ public class FtpController {
     @GetMapping("ftp")
     public ResponseEntity<String> uploadToFTP() {
         final var photosCount = ftpService.uploadPhotos();
-        return ResponseEntity.ok().body(String.format("%s photos uploaded to FTP"));
+        return ResponseEntity.ok().body(String.format("%s photos uploaded to FTP", photosCount));
     }
 }

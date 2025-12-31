@@ -49,9 +49,14 @@ public class FilesService {
 
     public void cleanCategoriesFolder() {
         final var categoriesFolder = Paths.get(workDir, OUTPUT_DIR, CATEGORIES_DIR).toFile();
-        for (final var file : Objects.requireNonNull(categoriesFolder.listFiles())) {
-            file.delete();
+        if (categoriesFolder.exists()) {
+            for (final var file : Objects.requireNonNull(categoriesFolder.listFiles())) {
+                file.delete();
+            }
+        } else {
+            categoriesFolder.mkdir();
         }
+
     }
 
     public String getOutputFilePath(final String fileName) {
@@ -67,7 +72,7 @@ public class FilesService {
     }
 
     public String getPhotosDir() {
-        return Paths.get(workDir, INPUT_DIR, PHOTOS).toString();
+        return Paths.get(workDir, PHOTOS).toString();
     }
 
     public String getWebDriverPath() {

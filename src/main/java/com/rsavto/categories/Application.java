@@ -10,6 +10,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 public class Application {
 
     public static void main(final String... args) {
+
         System.setProperty("https.protocols", "SSLv3,TLSv1,TLSv1.1,TLSv1.2");
         new SpringApplicationBuilder(Application.class)
                 .run(args);
