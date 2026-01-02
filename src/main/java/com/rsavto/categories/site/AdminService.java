@@ -1,6 +1,7 @@
 package com.rsavto.categories.site;
 
 import com.rsavto.categories.data.Category;
+import com.rsavto.categories.service.DataService;
 import com.rsavto.categories.service.FilesService;
 import com.rsavto.categories.site.admin.AdminHomePage;
 import com.rsavto.categories.site.admin.LoginPage;
@@ -29,9 +30,12 @@ public class AdminService {
     private final static String FORTUNA_LOGIN_URL = "https://fortunaavto.com.ua/adm";
     private final static String FORTUNA_IMPORT_URL = "https://fortunaavto.com.ua/adm/?m=shop&type=data";
     private final FilesService filesService;
+    private final DataService dataService;
 
-    public AdminService(final FilesService filesService) {
+    public AdminService(final FilesService filesService,
+                        final DataService dataService) {
         this.filesService = filesService;
+        this.dataService = dataService;
         final var webDriverPath = filesService.getWebDriverPath();
         System.setProperty("webdriver.chrome.driver", webDriverPath);
     }
@@ -57,7 +61,7 @@ public class AdminService {
 
             LOG.info("Start uploading " + category.getFileName());
             importCategoriesPage.submitCategory(categoryFile.getPath(), String.valueOf(category.getId()));
-            wait(5000);
+            wait(10000);
             LOG.info("Category " + category.getFileName() + " has been successfully uploaded.");
             driver.get(RSAVTO_IMPORT_CATEGORIES_URL);
         }
@@ -82,11 +86,11 @@ public class AdminService {
         return driver;
     }
 
-    private static AdminHomePage login(final WebDriver driver) {
+    private  AdminHomePage login(final WebDriver driver) {
         driver.get(RSAVTO_LOGIN_URL);
         final var loginPage = PageFactory.initElements(driver, LoginPage.class);
         final var homePage = loginPage.loginToRsAvto();
-        wait(2000);
+        wait(dataService.getWaitForCategoryInSec() * 1000);
         return homePage;
     }
 

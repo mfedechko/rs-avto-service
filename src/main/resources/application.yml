@@ -8,5 +8,9 @@ google:
   chunkSize: 200
   sleepTime: 15
 
+upload:
+  wait:
+    category: 10
+
 data:
   phoneNumber: 0638080251

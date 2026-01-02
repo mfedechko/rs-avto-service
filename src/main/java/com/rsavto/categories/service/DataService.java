@@ -22,4 +22,7 @@ public class DataService {
     @Value("${google.sleepTime}")
     private Integer sleepTime;
 
+    @Value("${upload.wait.category}")
+    private Integer waitForCategoryInSec;
+
 }
