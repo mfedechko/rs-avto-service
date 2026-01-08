@@ -56,8 +56,9 @@ public class FilesService {
         } else {
             categoriesFolder.mkdir();
         }
-
     }
+
+
 
     public String getOutputFilePath(final String fileName) {
         return Paths.get(workDir, OUTPUT_DIR, fileName).toString();
@@ -82,7 +83,6 @@ public class FilesService {
     public String getInputPhotosDir() {
         return inPhotosFolder;
     }
-
 
     public String getGoogleTmpFolder() {
         return Paths.get(workDir, OUTPUT_DIR, GOOGLE_TMP).toString();
@@ -116,5 +116,9 @@ public class FilesService {
 
     public String createGoogleTmpFilePath(final String fileName) {
         return Paths.get(workDir, OUTPUT_DIR, GOOGLE_TMP, fileName).toString();
+    }
+
+    public String getOutPutCategoriesDirPath() {
+        return Paths.get(workDir, OUTPUT_DIR, CATEGORIES_DIR).toString();
     }
 }

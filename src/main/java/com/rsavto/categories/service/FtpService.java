@@ -1,5 +1,6 @@
 package com.rsavto.categories.service;
 
+import com.rsavto.categories.service.read.CategoriesCsvReader;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.slf4j.Logger;
@@ -10,7 +11,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Mykola Fedechko
@@ -21,9 +24,12 @@ public class FtpService {
     private static final Logger LOG = LoggerFactory.getLogger(FtpService.class);
 
     private final FilesService filesService;
+    private final CategoriesCsvReader categoriesCsvReader;
 
-    public FtpService(final FilesService filesService) {
+    public FtpService(final FilesService filesService,
+                      final CategoriesCsvReader categoriesCsvReader) {
         this.filesService = filesService;
+        this.categoriesCsvReader = categoriesCsvReader;
     }
 
     //TODO upload only available photos
@@ -46,14 +52,13 @@ public class FtpService {
             //
             // Create an InputStream of the file to be uploaded
             //
-            final var photosDir = new File(filesService.getPhotosDir());
-            final var files = new ArrayList<File>();
-            collectFilesRecursively(photosDir, files);
+            final var files = collectAvailableFiles();
 
             final var totalFilesCount = files.size();
             LOG.info("Start uploading {} to FTP", totalFilesCount);
             var uploadedFilesCount = 0;
             for (final var file : files) {
+
                 client.setFileType(FTP.BINARY_FILE_TYPE, FTP.BINARY_FILE_TYPE);
                 client.setFileTransferMode(FTP.BINARY_FILE_TYPE);
                 final var filename = file.getName();
@@ -84,10 +89,28 @@ public class FtpService {
         return -1;
     }
 
+    private List<File> collectAvailableFiles() {
+        final var photosDir = new File(filesService.getPhotosDir());
+        final var files = new ArrayList<File>();
+        collectFilesRecursively(photosDir, files);
+        final var availablePictures = new ArrayList<File>();
+        final var picturesFromCategoryFiles = getPicturesFromCategoryFiles();
+        for (final var file : files) {
+            if (picturesFromCategoryFiles.contains(file.getName())) {
+                availablePictures.add(file);
+            }
+        }
+        return availablePictures;
+    }
+
     private static void collectFilesRecursively(final File dir, final List<File> fileList) {
         final var files = dir.listFiles();
         if (null != files) {
             for (final var file : files) {
+                if (file.getName().equals(".DS_Store")) {
+                    continue;
+                }
+
                 if (file.isDirectory()) {
                     collectFilesRecursively(file, fileList);
                 } else {
@@ -96,4 +119,21 @@ public class FtpService {
             }
         }
     }
+
+    private Set<String> getPicturesFromCategoryFiles()  {
+        final var categoryFilesDir = new File(filesService.getOutPutCategoriesDirPath());
+        final var allPictures = new HashSet<String>();
+        for (final var file : categoryFilesDir.listFiles()) {
+            final Set<String> pictures;
+            try {
+                pictures = categoriesCsvReader.readAllRecordsFromCsv(file.getAbsolutePath());
+                allPictures.addAll(pictures);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+        return allPictures;
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.rsavto.categories.service.write;
 
+import com.rsavto.categories.data.AppConstants;
 import com.rsavto.categories.data.Category;
 import com.rsavto.categories.data.FileNames;
 import com.rsavto.categories.docs.model.InputRecord;
@@ -166,7 +167,23 @@ public class DocWriter {
             final var quantity = record.getQuantity();
             final var picture = record.getPicture();
             final var desc = buildDescription(category, brand, article, name);
-            strings.add(String.format("%s;%s;%s;%s;%s;%s;\"%s\"", brand, article, price, name, quantity, picture, desc));
+            final var sb = new StringBuilder();
+            sb
+                    .append(brand)
+                    .append(AppConstants.CSV_DELIMITER)
+                    .append(article)
+                    .append(AppConstants.CSV_DELIMITER)
+                    .append(price)
+                    .append(AppConstants.CSV_DELIMITER)
+                    .append(name)
+                    .append(AppConstants.CSV_DELIMITER)
+                    .append(quantity)
+                    .append(AppConstants.CSV_DELIMITER)
+                    .append(picture)
+                    .append(AppConstants.CSV_DELIMITER)
+                    .append(quotedString(desc));
+            strings.add(sb.toString());
+
         }
         Files.write(filePath, strings);
     }
@@ -260,5 +277,9 @@ public class DocWriter {
         outputStream.close();
         workbook.close();
 
+    }
+
+    private String quotedString(final String value) {
+        return String.format("\"%s\"", value);
     }
 }
