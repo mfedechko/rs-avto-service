@@ -26,18 +26,18 @@ public class FtpService {
     private final FilesService filesService;
     private final CategoriesCsvReader categoriesCsvReader;
 
+    private static final String host = "rsavto.com.ua";
+    private static final String user = "img_allz994-wLgG";
+    private static final String password = "neGZihED1y0JyGAqezj34D";
+
     public FtpService(final FilesService filesService,
                       final CategoriesCsvReader categoriesCsvReader) {
         this.filesService = filesService;
         this.categoriesCsvReader = categoriesCsvReader;
     }
 
-    //TODO upload only available photos
+    //TODO try to implement parallel execution
     public int uploadPhotos() {
-
-        final var host = "rsavto.com.ua";
-        final var user = "img_allz994-wLgG";
-        final var password = "neGZihED1y0JyGAqezj34D";
 
         final var client = new FTPClient();
         FileInputStream fis = null;
@@ -47,6 +47,9 @@ public class FtpService {
             client.connect(host);
             client.enterLocalPassiveMode();
             client.login(user, password);
+
+            client.setFileType(FTP.BINARY_FILE_TYPE, FTP.BINARY_FILE_TYPE);
+            client.setFileTransferMode(FTP.BINARY_FILE_TYPE);
 
             LOG.info("Connection established");
             //
@@ -58,9 +61,6 @@ public class FtpService {
             LOG.info("Start uploading {} to FTP", totalFilesCount);
             var uploadedFilesCount = 0;
             for (final var file : files) {
-
-                client.setFileType(FTP.BINARY_FILE_TYPE, FTP.BINARY_FILE_TYPE);
-                client.setFileTransferMode(FTP.BINARY_FILE_TYPE);
                 final var filename = file.getName();
                 fis = new FileInputStream(file);
                 client.storeFile(filename, fis);
@@ -103,23 +103,6 @@ public class FtpService {
         return availablePictures;
     }
 
-    private static void collectFilesRecursively(final File dir, final List<File> fileList) {
-        final var files = dir.listFiles();
-        if (null != files) {
-            for (final var file : files) {
-                if (file.getName().equals(".DS_Store")) {
-                    continue;
-                }
-
-                if (file.isDirectory()) {
-                    collectFilesRecursively(file, fileList);
-                } else {
-                    fileList.add(file);
-                }
-            }
-        }
-    }
-
     private Set<String> getPicturesFromCategoryFiles()  {
         final var categoryFilesDir = new File(filesService.getOutPutCategoriesDirPath());
         final var allPictures = new HashSet<String>();
@@ -136,4 +119,19 @@ public class FtpService {
         return allPictures;
     }
 
+    private static void collectFilesRecursively(final File dir, final List<File> fileList) {
+        final var files = dir.listFiles();
+        if (null != files) {
+            for (final var file : files) {
+                if (file.getName().equals(".DS_Store")) {
+                    continue;
+                }
+                if (file.isDirectory()) {
+                    collectFilesRecursively(file, fileList);
+                } else {
+                    fileList.add(file);
+                }
+            }
+        }
+    }
 }
