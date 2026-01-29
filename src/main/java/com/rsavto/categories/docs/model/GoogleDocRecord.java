@@ -8,7 +8,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class GoogleRecord {
+public class GoogleDocRecord {
 
     private String id;
     private String name;

@@ -3,12 +3,11 @@ package com.rsavto.categories.service.google;
 import com.rsavto.categories.data.Category;
 import com.rsavto.categories.data.FileNames;
 import com.rsavto.categories.docs.CreateGoogleResponse;
-import com.rsavto.categories.docs.model.GoogleRecord;
+import com.rsavto.categories.docs.model.GoogleDocRecord;
 import com.rsavto.categories.docs.model.InputRecord;
 import com.rsavto.categories.service.DataService;
 import com.rsavto.categories.service.FilesService;
 import com.rsavto.categories.service.read.AllReader;
-import com.rsavto.categories.service.read.CategoriesReader;
 import com.rsavto.categories.service.read.Googlereader;
 import com.rsavto.categories.service.write.GoogleWriter;
 import com.rsavto.categories.site.AdminService;
@@ -68,14 +67,14 @@ public class AllGoogleService extends GoogleService {
                 .map(InputRecord::getDescArticle)
                 .collect(Collectors.toList());
         final var articleLinks = rsAvtoWebSiteService.getLinks(articles);
-        final var googleRecords = new ArrayList<GoogleRecord>();
+        final var googleRecords = new ArrayList<GoogleDocRecord>();
 
         for (final var record : records) {
 
             if (originalArticles.contains(record.getDescArticle()) && record.getCategory() != Category.ORIGINAL) {
                 continue;
             }
-            final var googleRecord = new GoogleRecord();
+            final var googleRecord = new GoogleDocRecord();
             final var article = record.getDescArticle();
             final var brand = record.getDescBrand();
             final var name = record.getDescName();

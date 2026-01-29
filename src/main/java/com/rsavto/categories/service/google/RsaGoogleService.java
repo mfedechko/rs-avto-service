@@ -2,7 +2,7 @@ package com.rsavto.categories.service.google;
 
 import com.rsavto.categories.data.FileNames;
 import com.rsavto.categories.docs.CreateGoogleResponse;
-import com.rsavto.categories.docs.model.GoogleRecord;
+import com.rsavto.categories.docs.model.GoogleDocRecord;
 import com.rsavto.categories.docs.model.InputRecord;
 import com.rsavto.categories.service.DataService;
 import com.rsavto.categories.service.FilesService;
@@ -61,9 +61,9 @@ public class RsaGoogleService extends GoogleService {
                 .map(InputRecord::getArticle)
                 .toList();
         final var rsaArticleLinks = rsAvtoWebSiteService.getLinks(rsaArticles);
-        final var googleRecords = new ArrayList<GoogleRecord>();
+        final var googleRecords = new ArrayList<GoogleDocRecord>();
         for (final var record : rsaRecords) {
-            final var googleRecord = new GoogleRecord();
+            final var googleRecord = new GoogleDocRecord();
             final var article = record.getDescArticle();
             final var brand = record.getDescBrand();
             final var name = record.getDescName();

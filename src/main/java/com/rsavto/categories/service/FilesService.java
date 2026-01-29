@@ -59,7 +59,6 @@ public class FilesService {
     }
 
 
-
     public String getOutputFilePath(final String fileName) {
         return Paths.get(workDir, OUTPUT_DIR, fileName).toString();
     }
@@ -104,14 +103,10 @@ public class FilesService {
 
     public void cleanGoogleTmpFolder() throws IOException {
         final var path = Paths.get(workDir, OUTPUT_DIR, GOOGLE_TMP);
-        Files.list(path).forEach(p -> {
-            try {
-                Files.delete(p);
-            } catch (final IOException exc) {
-                throw new RuntimeException(exc);
-            }
-        });
-
+        final var googleTmpDir = new File(Paths.get(workDir, OUTPUT_DIR, GOOGLE_TMP).toString());
+        for (final var file : googleTmpDir.listFiles()) {
+            Files.delete(file.toPath());
+        }
     }
 
     public String createGoogleTmpFilePath(final String fileName) {
@@ -120,5 +115,9 @@ public class FilesService {
 
     public String getOutPutCategoriesDirPath() {
         return Paths.get(workDir, OUTPUT_DIR, CATEGORIES_DIR).toString();
+    }
+
+    public void removeFile(final String filePath) throws IOException {
+        Files.delete(Paths.get(filePath));
     }
 }

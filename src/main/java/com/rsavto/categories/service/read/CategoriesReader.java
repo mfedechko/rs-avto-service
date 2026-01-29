@@ -30,7 +30,7 @@ public abstract class CategoriesReader {
     protected CategoriesReader(final FilesService filesService, final Map<String, Integer> columnsMap) {
         this.filesService = filesService;
         this.columnsMap = columnsMap;
-        this.outputColumns = Columns.OUTPUT;
+        this.outputColumns = Columns.CATEGORIES_OUTPUT;
     }
 
     public abstract List<InputRecord> readAllRecords() throws IOException;

@@ -1,7 +1,7 @@
 package com.rsavto.categories.service.write;
 
 import com.rsavto.categories.docs.model.GoogleInputRecord;
-import com.rsavto.categories.docs.model.GoogleRecord;
+import com.rsavto.categories.docs.model.GoogleDocRecord;
 import com.rsavto.categories.service.FilesService;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -25,7 +25,7 @@ public class GoogleWriter {
         this.filesService = filesService;
     }
 
-    public void createGoogleExcel(final List<GoogleRecord> records,
+    public void createGoogleExcel(final List<GoogleDocRecord> records,
                                   final String fileName) throws IOException {
         final Workbook workbook = new XSSFWorkbook();
         final var sheet = workbook.createSheet();

@@ -3,6 +3,8 @@ package com.rsavto.categories.docs.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 /**
  * @author Mykola Fedechko
  */
@@ -13,6 +15,7 @@ public class OutputRecord {
     private String brand;
     private String article;
     private String desc;
-    private double price;
+    private BigDecimal price;
     private int quantity;
+    private String imageLink;
 }

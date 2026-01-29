@@ -42,4 +42,9 @@ public class DocsController {
         priceProcessor.updatePrices();
     }
 
+    @GetMapping("addImages")
+    public void updateInputDocWithPictures() throws IOException {
+        allProcessor.updateDocWithPictures();
+    }
+
 }

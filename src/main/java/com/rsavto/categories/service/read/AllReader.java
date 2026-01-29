@@ -133,6 +133,7 @@ public class AllReader extends CategoriesReader{
         return  records;
     }
 
+
     protected static Category processCategory(final String groupValue) {
         var processedValue = groupValue.strip();
         processedValue = processedValue.replaceAll("c", "с");

@@ -188,6 +188,12 @@ public class DocWriter {
         Files.write(filePath, strings);
     }
 
+    public void createUpdatedCategoryOutputFile(final String filename) {
+        final Workbook workbook = new XSSFWorkbook();
+        final var sheet = workbook.createSheet();
+        createHeaderRow(sheet);
+
+    }
 
     private static void createHeaderRow(final Sheet sheet) {
         final var row = sheet.createRow(0);
